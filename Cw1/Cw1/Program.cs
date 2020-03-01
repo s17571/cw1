@@ -10,7 +10,13 @@ namespace Cw1
     {
         static async Task Main(string[] args)
         {
+            if (args[0] == null)
+            {
+                throw new ArgumentNullException();
+            }
+
             var emails = await GetEmails(args[0]);
+
             foreach(var a in args)
             {
                 Console.WriteLine(a);
@@ -26,8 +32,17 @@ namespace Cw1
         {
             var httpClient = new HttpClient();
             var listOfEmails = new List<string>();
+            HttpResponseMessage response = new HttpResponseMessage();
+            
+            try
+            {
+                response = await httpClient.GetAsync(url);
+            } catch (Exception e)
+            {
+                Console.WriteLine("Błąd w czasie pobierania strony");
+            }
 
-            var response = await httpClient.GetAsync(url);
+            httpClient.Dispose();
 
             Regex emailRegex = new Regex(@"\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*", RegexOptions.IgnoreCase);
             
@@ -35,8 +50,18 @@ namespace Cw1
 
             foreach (var emailMatch in emailMatches)
             {
-                listOfEmails.Add(emailMatch.ToString());
+                if (!listOfEmails.Contains(emailMatch.ToString()))
+                {
+                    listOfEmails.Add(emailMatch.ToString());
+                }
+                
             }
+
+            if (listOfEmails.Count == 0)
+            {
+                Console.WriteLine("Nie znaleziono adresów email");
+                return null;
+            } 
 
             return listOfEmails;
         }
