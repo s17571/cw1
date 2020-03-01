@@ -30,7 +30,7 @@ namespace Cw1
             var response = await httpClient.GetAsync(url);
 
             Regex emailRegex = new Regex(@"\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*", RegexOptions.IgnoreCase);
-            //find items that matches with our pattern
+            
             MatchCollection emailMatches = emailRegex.Matches(response.Content.ReadAsStringAsync().Result);
 
             foreach (var emailMatch in emailMatches)
